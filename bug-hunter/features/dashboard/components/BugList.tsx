@@ -15,7 +15,7 @@ export function BugList({ logs }: { logs: BugLog[] }) {
   if (logs.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-        아직 등록된 에러가 없습니다. 첫 번째 에러를 기록해보세요! 🐛
+        아직 등록된 에러가 없습니다. 첫 번째 에러를 기록해보세요!
       </div>
     );
   }
