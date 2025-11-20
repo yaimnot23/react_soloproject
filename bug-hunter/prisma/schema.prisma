@@ -1,0 +1,30 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model BugLog {
+  id              Int      @id @default(autoincrement())
+
+  // 1. 기본 정보
+  errorSubject    String   // 에러 제목
+  errorDetail     String?  // 에러 상세 내용
+  solution        String?  // 해결 방법
+  tags            String?  // 태그 (예: "React,DB" - 콤마로 구분)
+
+  // 2. 상태 관리
+  isSolved        Boolean  @default(false) // 해결 여부
+
+  // 3. 카운터 기능
+  occurrenceCount Int      @default(1)     // 발생 횟수
+
+  // 4. 시간 정보
+  createdAt       DateTime @default(now()) // 최초 생성일
+  lastOccurredAt  DateTime @default(now()) // 최근 발생일 (정렬용)
+}
