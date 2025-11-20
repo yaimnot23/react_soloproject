@@ -3,7 +3,7 @@ import { getBugLogs } from '@/features/dashboard/actions';
 import { CreateBugForm } from '@/features/dashboard/components/CreateBugForm';
 import { BugList } from '@/features/dashboard/components/BugList';
 import { SearchBar } from '@/features/dashboard/components/SearchBar';
-import { LogoutButton } from '@/features/auth/components/LogoutButton'; // 1. 여기서 가져오고
+import { LogoutButton } from '@/features/auth/components/LogoutButton';
 
 interface PageProps {
   searchParams: Promise<{ q?: string; filter?: string }>;
