@@ -1,25 +1,32 @@
+import Link from 'next/link';
 import { getBugLogs } from '@/features/dashboard/actions';
 import { CreateBugForm } from '@/features/dashboard/components/CreateBugForm';
 import { BugList } from '@/features/dashboard/components/BugList';
-import { SearchBar } from '@/features/dashboard/components/SearchBar'; // 추가됨
+import { SearchBar } from '@/features/dashboard/components/SearchBar';
+import { LogoutButton } from '@/features/auth/components/LogoutButton'; // 1. 여기서 가져오고
 
-// URL에 있는 파라미터(?q=...)를 받아옵니다.
 interface PageProps {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; filter?: string }>;
 }
 
 export default async function Home({ searchParams }: PageProps) {
-  // 1. 검색어 꺼내기
   const params = await searchParams;
   const query = params.q || '';
+  const filter = params.filter || 'all';
 
-  // 2. 검색어를 넣어서 데이터 가져오기
-  const logs = await getBugLogs(query);
+  const logs = await getBugLogs(query, filter);
 
   return (
     <main className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-3xl mx-auto px-4">
-        <div className="text-center mb-10">
+        
+        {/* 헤더 영역 */}
+        <div className="relative text-center mb-10">
+          {/* 2. 여기에 버튼 배치 (우측 상단) */}
+          <div className="absolute right-0 top-0">
+            <LogoutButton />
+          </div>
+
           <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">
              Bug Hunter
           </h1>
@@ -28,23 +35,28 @@ export default async function Home({ searchParams }: PageProps) {
           </p>
         </div>
 
-        {/* 등록 폼 */}
         <CreateBugForm />
-
-        {/* 검색창 추가! */}
         <SearchBar />
 
-        <div className="flex items-center justify-between mb-4 text-sm text-gray-500 px-1">
-          {/* 검색 결과 개수 표시 */}
-          <span>
-            {query ? `'${query}' 검색 결과: ` : 'Total '} 
-            <strong>{logs.length}</strong> bugs found
+        <div className="flex items-center justify-between mb-4 text-sm px-1">
+          <span className="text-gray-500">
+            {filter === 'unsolved' ? ' 수배 중인 에러 ' : ' 전체 기록 '}
+            <strong>{logs.length}</strong> 건
           </span>
           
-          {/* 필터 버튼은 기능 구현 안 함 (디자인용) */}
           <div className="flex gap-4">
-            <button className="font-bold text-indigo-600">전체 보기</button>
-            <button className="hover:text-gray-900">미해결만</button>
+            <Link 
+              href={`/?q=${query}`}
+              className={`font-medium transition-colors ${filter !== 'unsolved' ? 'text-indigo-600 font-bold' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              전체 보기
+            </Link>
+            <Link 
+              href={`/?q=${query}&filter=unsolved`} 
+              className={`font-medium transition-colors ${filter === 'unsolved' ? 'text-indigo-600 font-bold' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              미해결만
+            </Link>
           </div>
         </div>
 

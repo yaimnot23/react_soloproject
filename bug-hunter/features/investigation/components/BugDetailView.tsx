@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from 'react';
-import { updateBugLog, toggleSolved, deleteBugLog } from '../actions';
 import { useRouter } from 'next/navigation';
-import { Badge } from '@/shared/ui/Badge'; // 아까 만든 뱃지 재사용
-// Badge import가 @ 때문에 안 되면 상대 경로로: '../../../shared/ui/Badge'
-
+import { updateBugLog, toggleSolved, deleteBugLog } from '@/features/investigation/actions';
+import { Badge } from '@/shared/ui/Badge';
+import { MarkdownExport } from '@/features/investigation/components/MarkdownExport';
 interface BugLogProps {
   log: {
     id: number;
@@ -15,19 +14,19 @@ interface BugLogProps {
     tags: string | null;
     isSolved: boolean;
     createdAt: Date;
+    occurrenceCount: number; // 카운트 정보 추가
   };
 }
 
 export function BugDetailView({ log }: BugLogProps) {
-  // 낙관적 업데이트를 위해 로컬 상태 사용 (화면이 즉시 바뀌게)
   const [isSolved, setIsSolved] = useState(log.isSolved);
   const router = useRouter();
 
   // 해결 상태 토글 핸들러
   const handleToggleSolved = async () => {
     const newState = !isSolved;
-    setIsSolved(newState); // 1. 화면 먼저 바꾸고 (빠른 반응)
-    await toggleSolved(log.id, isSolved); // 2. 서버에 요청
+    setIsSolved(newState);
+    await toggleSolved(log.id, isSolved);
   };
 
   // 삭제 핸들러
@@ -39,7 +38,7 @@ export function BugDetailView({ log }: BugLogProps) {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* 상단 헤더: 제목, 뱃지, 삭제버튼 */}
+      {/* 헤더: 제목, 상태, 버튼들 */}
       <div className="flex items-start justify-between mb-6 pb-6 border-b">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -55,7 +54,11 @@ export function BugDetailView({ log }: BugLogProps) {
         </div>
         
         <div className="flex gap-2">
+          {/* 블로그 복사 버튼 추가 */}
+          <MarkdownExport log={log} />
+
           <button
+            type="button"
             onClick={handleToggleSolved}
             className={`px-4 py-2 rounded-md text-sm font-medium border transition-colors ${
               isSolved
@@ -66,6 +69,7 @@ export function BugDetailView({ log }: BugLogProps) {
             {isSolved ? '다시 수배하기' : '검거 완료 처리'}
           </button>
           <button
+            type="button"
             onClick={handleDelete}
             className="px-4 py-2 rounded-md text-sm font-medium text-red-600 border border-red-200 hover:bg-red-50"
           >
@@ -74,31 +78,31 @@ export function BugDetailView({ log }: BugLogProps) {
         </div>
       </div>
 
-      {/* 메인 컨텐츠: 수정 폼 */}
+      {/* 수정 폼 */}
       <form action={async (formData) => {
           await updateBugLog(log.id, formData);
           alert('저장되었습니다!');
       }}>
         <div className="grid gap-8">
-          {/* 에러 상세 내용 */}
+          {/* 문제 상황 입력 */}
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">1. 문제 상황 (Error Detail)</h2>
             <textarea
               name="detail"
               defaultValue={log.errorDetail || ''}
               placeholder="에러 로그나 발생 상황을 자세히 적어주세요..."
-              className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none"
+              className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
             />
           </section>
 
-          {/* 해결 방법 */}
+          {/* 해결 방법 입력 */}
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">2. 해결 방법 (Solution)</h2>
             <textarea
               name="solution"
               defaultValue={log.solution || ''}
-              placeholder="어떻게 해결했나요? 나중을 위해 기록해두세요!"
-              className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none bg-indigo-50/30"
+              placeholder="어떻게 해결했나요? 미래의 나를 위해 기록해두세요!"
+              className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none bg-indigo-50/30"
             />
           </section>
 
@@ -106,7 +110,7 @@ export function BugDetailView({ log }: BugLogProps) {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-transform active:scale-95 shadow-sm"
+              className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-transform active:scale-95"
             >
               변경사항 저장하기
             </button>
