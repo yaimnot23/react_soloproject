@@ -30,14 +30,15 @@ model BugLog {
   solution        String?  // 해결 방법
   tags            String?  // 태그
 
+  // 값 예시: 'low', 'normal', 'high', 'critical'
+  priority        String   @default("normal") 
+
   isSolved        Boolean  @default(false)
   occurrenceCount Int      @default(1)
 
   createdAt       DateTime @default(now())
   lastOccurredAt  DateTime @default(now())
 
-  // 주인 정보 (User와 연결)
-  // 기존 데이터 충돌 방지를 위해 일단 선택사항(?)으로 둡니다.
-  userId          Int?     
+  userId          Int?
   user            User?    @relation(fields: [userId], references: [id])
 }

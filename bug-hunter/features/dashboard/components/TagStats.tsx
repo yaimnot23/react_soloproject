@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react';
+import Link from 'next/link'; // [추가됨] 링크 이동을 위해 import
 
 const COLORS = [
   '#3b82f6', // Blue
@@ -24,12 +25,11 @@ export function TagStats({ logs }: { logs: BugLog[] }) {
 
     logs.forEach((log) => {
       if (log.tags) {
-        // 1. 태그 분리 및 전처리
         const tagList = log.tags.split(',').map((t) => {
           return t
-            .trim()                 // 앞뒤 공백 제거
-            .replace(/^#/, '')      // '#' 제거
-            .toLowerCase();         // ★ 핵심: 모두 소문자로 변환 ('React' -> 'react')
+            .trim()
+            .replace(/^#/, '')
+            .toLowerCase();
         });
         
         tagList.forEach((tag) => {
@@ -42,16 +42,14 @@ export function TagStats({ logs }: { logs: BugLog[] }) {
 
     if (totalTags === 0) return [];
 
-    // 2. 데이터 가공 (비율 계산 및 이름 포맷팅)
     return Object.entries(counts)
       .map(([name, count], index) => ({
-        // ★ 화면 표시용 이름 변환: 첫 글자만 대문자로 (예: react -> React)
         name: name.charAt(0).toUpperCase() + name.slice(1), 
         count,
         percent: (count / totalTags) * 100,
         color: COLORS[index % COLORS.length],
       }))
-      .sort((a, b) => b.count - a.count); // 많은 순서대로 정렬
+      .sort((a, b) => b.count - a.count);
   }, [logs]);
 
   if (stats.length === 0) return null;
@@ -60,7 +58,8 @@ export function TagStats({ logs }: { logs: BugLog[] }) {
     <div className="mb-8 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
       <h3 className="text-sm font-bold text-gray-900 mb-3">Technologies</h3>
       
-      <div className="flex h-3 w-full rounded-full overflow-hidden bg-gray-100">
+      {/* 게이지 바 */}
+      <div className="flex h-3 w-full rounded-full overflow-hidden bg-gray-100 mb-3">
         {stats.map((stat) => (
           <div
             key={stat.name}
@@ -71,18 +70,25 @@ export function TagStats({ logs }: { logs: BugLog[] }) {
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-x-6 gap-y-2 mt-3">
+      {/* [수정됨] 범례 (Legend) - 클릭 시 검색 필터링 적용 */}
+      <div className="flex flex-wrap gap-x-6 gap-y-2">
         {stats.map((stat) => (
-          <div key={stat.name} className="flex items-center gap-2">
+          <Link
+            key={stat.name}
+            href={`/?q=${stat.name}`} // 클릭 시 해당 태그로 검색
+            className="flex items-center gap-2 group cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-md transition-colors"
+          >
             <span
-              className="w-2.5 h-2.5 rounded-full"
+              className="w-2.5 h-2.5 rounded-full ring-1 ring-transparent group-hover:ring-gray-200"
               style={{ backgroundColor: stat.color }}
             />
-            <span className="text-xs font-medium text-gray-700">
+            <span className="text-xs font-medium text-gray-700 group-hover:text-gray-900">
               {stat.name}
-              <span className="text-gray-500 ml-1">{stat.percent.toFixed(1)}%</span>
+              <span className="text-gray-500 ml-1 group-hover:text-gray-700">
+                {stat.percent.toFixed(1)}%
+              </span>
             </span>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

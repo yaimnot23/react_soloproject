@@ -3,23 +3,30 @@
 import Link from 'next/link';
 import { incrementBugCount } from '@/features/dashboard/actions';
 
-// 1. 데이터의 타입을 정의합니다 (이 부분이 있어야 log가 무엇인지 알 수 있습니다)
+// 1. priority 필드 추가 확인
 interface BugLog {
   id: number;
   errorSubject: string;
   tags: string | null;
   isSolved: boolean;
   occurrenceCount: number;
+  priority: string; // [필수]
 }
 
-// 태그 정규화 함수
 const formatTag = (tag: string) => {
   const cleaned = tag.trim().replace(/^#/, '').toLowerCase();
   if (!cleaned) return '';
   return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
 };
 
-// 2. 컴포넌트 props에 타입을 지정합니다 ({ logs }: { logs: BugLog[] })
+// 2. 중요도별 색상 스타일 정의
+const priorityStyles: Record<string, string> = {
+  low: 'border-l-4 border-l-blue-400',
+  normal: 'border-l-4 border-l-gray-300',
+  high: 'border-l-4 border-l-orange-400',
+  critical: 'border-l-4 border-l-red-500 bg-red-50/30',
+};
+
 export function BugList({ logs }: { logs: BugLog[] }) {
   if (logs.length === 0) {
     return (
@@ -32,40 +39,48 @@ export function BugList({ logs }: { logs: BugLog[] }) {
   return (
     <div className="space-y-3">
       {logs.map((log) => {
-        // 이제 TypeScript가 'log'를 BugLog 타입으로 인식합니다.
         const tags = log.tags 
           ? log.tags.split(',').map(formatTag).filter(Boolean) 
           : [];
+        
+        // 3. 해당 에러의 중요도 스타일 가져오기
+        const borderStyle = priorityStyles[log.priority] || priorityStyles.normal;
 
         return (
           <div 
             key={log.id} 
-            className={`relative p-4 rounded-lg border transition-all hover:shadow-md flex items-center justify-between group ${
-              log.isSolved ? 'bg-gray-50 border-gray-200 opacity-75' : 'bg-white border-gray-200'
+            // 4. borderStyle 클래스 적용 (테두리 색상 표시)
+            className={`relative p-4 rounded-lg border border-gray-200 transition-all hover:shadow-md flex items-center justify-between group ${borderStyle} ${
+              log.isSolved ? 'opacity-75 bg-gray-50' : 'bg-white'
             }`}
           >
-            {/* 링크 영역 */}
             <Link href={`/logs/${log.id}`} className="absolute inset-0 z-0" />
 
-            {/* 왼쪽: 에러 정보 */}
             <div className="flex-1 z-10 pointer-events-none">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${
                   log.isSolved 
                     ? 'bg-green-100 text-green-800 border-green-200' 
-                    : 'bg-red-100 text-red-800 border-red-200'
+                    : 'bg-gray-100 text-gray-600 border-gray-200'
                 }`}>
                   {log.isSolved ? '검거 완료' : '수배 중'}
                 </span>
+
+                {/* 긴급일 경우 텍스트 추가 표시 */}
+                {log.priority === 'critical' && (
+                  <span className="text-xs font-bold text-red-600 animate-pulse">
+                    🔥 긴급
+                  </span>
+                )}
                 
-                {/* 태그 뱃지들 */}
                 {tags.map((tag, index) => (
-                  <span 
+                  <Link 
                     key={index} 
-                    className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded-full border border-gray-200"
+                    href={`/?q=${tag}`}
+                    className="relative z-20 pointer-events-auto px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded-full border border-gray-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-colors"
                   >
                     #{tag}
-                  </span>
+                  </Link>
                 ))}
               </div>
               <h3 className={`font-medium ${log.isSolved ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
@@ -73,7 +88,6 @@ export function BugList({ logs }: { logs: BugLog[] }) {
               </h3>
             </div>
 
-            {/* 오른쪽: 카운터 버튼 */}
             <button
               onClick={(e) => {
                 e.preventDefault();

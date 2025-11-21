@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import { updateBugLog, toggleSolved, deleteBugLog } from '@/features/investigation/actions';
 import { Badge } from '@/shared/ui/Badge';
 import { MarkdownExport } from '@/features/investigation/components/MarkdownExport';
+import { toast } from 'sonner'; // [추가됨]
+
+// ... (BugLogProps 인터페이스 등 기존 코드 유지) ...
+
 interface BugLogProps {
   log: {
     id: number;
@@ -14,7 +18,8 @@ interface BugLogProps {
     tags: string | null;
     isSolved: boolean;
     createdAt: Date;
-    occurrenceCount: number; // 카운트 정보 추가
+    occurrenceCount: number;
+    priority: string;
   };
 }
 
@@ -22,23 +27,24 @@ export function BugDetailView({ log }: BugLogProps) {
   const [isSolved, setIsSolved] = useState(log.isSolved);
   const router = useRouter();
 
-  // 해결 상태 토글 핸들러
   const handleToggleSolved = async () => {
     const newState = !isSolved;
     setIsSolved(newState);
     await toggleSolved(log.id, isSolved);
+    // [추가됨] 상태 변경 알림
+    toast.success(newState ? '검거 완료 처리되었습니다!' : '다시 수배 중으로 변경되었습니다.');
   };
 
-  // 삭제 핸들러
   const handleDelete = async () => {
     if (confirm('정말 삭제하시겠습니까? 복구할 수 없습니다.')) {
       await deleteBugLog(log.id);
+      toast.error('에러 로그가 삭제되었습니다.'); // [추가됨]
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* 헤더: 제목, 상태, 버튼들 */}
+      {/* ... (헤더 부분 기존 코드 유지) ... */}
       <div className="flex items-start justify-between mb-6 pb-6 border-b">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -54,9 +60,7 @@ export function BugDetailView({ log }: BugLogProps) {
         </div>
         
         <div className="flex gap-2">
-          {/* 블로그 복사 버튼 추가 */}
           <MarkdownExport log={log} />
-
           <button
             type="button"
             onClick={handleToggleSolved}
@@ -78,13 +82,32 @@ export function BugDetailView({ log }: BugLogProps) {
         </div>
       </div>
 
-      {/* 수정 폼 */}
       <form action={async (formData) => {
           await updateBugLog(log.id, formData);
-          alert('저장되었습니다!');
+          // [수정됨] alert -> toast.success
+          toast.success('변경사항이 저장되었습니다!');
       }}>
         <div className="grid gap-8">
-          {/* 문제 상황 입력 */}
+          {/* ... (입력 폼 내용 기존 코드 유지) ... */}
+          <section className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="flex items-center gap-4">
+              <label className="font-semibold text-gray-900">중요도 설정:</label>
+              <select 
+                name="priority" 
+                defaultValue={log.priority}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
+              >
+                <option value="low">낮음 (Low)</option>
+                <option value="normal">보통 (Normal)</option>
+                <option value="high">높음 (High)</option>
+                <option value="critical">🔥 긴급 (Critical)</option>
+              </select>
+              <span className="text-sm text-gray-500">
+                * 에러의 심각도에 따라 목록에서의 표시가 달라집니다.
+              </span>
+            </div>
+          </section>
+
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">1. 문제 상황 (Error Detail)</h2>
             <textarea
@@ -95,7 +118,6 @@ export function BugDetailView({ log }: BugLogProps) {
             />
           </section>
 
-          {/* 해결 방법 입력 */}
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">2. 해결 방법 (Solution)</h2>
             <textarea
@@ -106,7 +128,6 @@ export function BugDetailView({ log }: BugLogProps) {
             />
           </section>
 
-          {/* 저장 버튼 */}
           <div className="flex justify-end">
             <button
               type="submit"

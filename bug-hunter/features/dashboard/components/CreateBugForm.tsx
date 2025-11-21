@@ -16,6 +16,19 @@ export function CreateBugForm() {
       className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6"
     >
       <div className="flex gap-3">
+        {/* ▼▼▼ [이 부분이 추가되어야 합니다] ▼▼▼ */}
+        <select
+          name="priority"
+          className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-gray-50 text-sm"
+          defaultValue="normal"
+        >
+          <option value="low">낮음</option>
+          <option value="normal">보통</option>
+          <option value="high">높음</option>
+          <option value="critical">긴급🔥</option>
+        </select>
+        {/* ▲▲▲ ------------------------- ▲▲▲ */}
+
         {/* 에러 제목 입력 */}
         <input
           name="subject"

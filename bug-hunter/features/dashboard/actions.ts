@@ -4,13 +4,11 @@ import { prisma } from '@/shared/lib/db';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@prisma/client';
 
-// 1. 에러 목록 가져오기 (검색 + 필터 기능)
+// 1. 에러 목록 가져오기
 export async function getBugLogs(query?: string, filter?: string) {
   try {
-    // DB 검색 조건 만들기
     const whereCondition: Prisma.BugLogWhereInput = {};
 
-    // A. 검색어가 있으면 제목이나 태그에서 찾기
     if (query) {
       whereCondition.OR = [
         { errorSubject: { contains: query } },
@@ -18,7 +16,6 @@ export async function getBugLogs(query?: string, filter?: string) {
       ];
     }
 
-    // B. '미해결만' 필터가 있으면 isSolved가 false인 것만 찾기
     if (filter === 'unsolved') {
       whereCondition.isSolved = false;
     }
@@ -26,9 +23,11 @@ export async function getBugLogs(query?: string, filter?: string) {
     return await prisma.bugLog.findMany({
       where: whereCondition,
       orderBy: [
-        { isSolved: 'asc' },         // 미해결 먼저
-        { occurrenceCount: 'desc' }, // 많이 발생한 순
-        { lastOccurredAt: 'desc' }   // 최근 발생한 순
+        // 정렬 우선순위: 해결 여부 -> 중요도(긴급한거 위로?) -> 빈도 -> 최신순
+        // 중요도 정렬은 문자열이라 복잡하니 일단 기존 로직 유지
+        { isSolved: 'asc' },
+        { occurrenceCount: 'desc' }, 
+        { lastOccurredAt: 'desc' }   
       ]
     });
   } catch (error) {
@@ -37,10 +36,11 @@ export async function getBugLogs(query?: string, filter?: string) {
   }
 }
 
-// 2. 에러 등록하기
+// 2. 에러 등록하기 (수정됨: priority 추가)
 export async function createBugLog(formData: FormData) {
   const subject = formData.get('subject') as string;
   const tags = formData.get('tags') as string;
+  const priority = formData.get('priority') as string || 'normal'; // 기본값 설정
 
   if (!subject) return;
 
@@ -49,6 +49,7 @@ export async function createBugLog(formData: FormData) {
       data: {
         errorSubject: subject,
         tags: tags || '',
+        priority: priority, // DB 저장
       },
     });
     revalidatePath('/');
@@ -57,7 +58,7 @@ export async function createBugLog(formData: FormData) {
   }
 }
 
-// 3. 발생 횟수 증가 (+1)
+// 3. 발생 횟수 증가
 export async function incrementBugCount(id: number) {
   try {
     await prisma.bugLog.update({
