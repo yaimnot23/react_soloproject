@@ -2,11 +2,11 @@ import 'server-only'
 import { SignJWT, jwtVerify, JWTPayload } from 'jose'
 import { cookies } from 'next/headers'
 
-// 1. 환경 변수 체크 및 키 인코딩
+// 1. 환경 변수 체크 및 키 인코딩 -> 마스터키
 const secretKey = process.env.SESSION_SECRET
 const key = new TextEncoder().encode(secretKey)
 
-// 개발 환경이 아닌데 키가 없으면 서버 시작 시점에 에러를 던져서 사고 방지
+// 개발 환경이 아닌데 키가 없으면 서버 시작 시점에 에러
 if (!secretKey && process.env.NODE_ENV === 'production') {
   throw new Error('SESSION_SECRET environment variable is not set.')
 }
