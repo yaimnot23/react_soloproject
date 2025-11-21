@@ -1,4 +1,4 @@
-패키지 설치
+1. 패키지 설치
 Bash
 
 npm install
