@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { toast } from 'sonner'; // [수정 1] toast import 추가
+import { toast } from 'sonner';
 
 interface BugLogData {
   errorSubject: string;

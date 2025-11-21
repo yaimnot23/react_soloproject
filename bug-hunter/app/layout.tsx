@@ -30,7 +30,6 @@ export default function RootLayout({
       >
         {children}
         
-        {/* [2] 이 컴포넌트가 있어야 메시지가 화면에 나타납니다! */}
         <Toaster position="top-center" richColors />
         
       </body>

@@ -70,7 +70,7 @@ export function TagStats({ logs }: { logs: BugLog[] }) {
         ))}
       </div>
 
-      {/* [수정됨] 범례 (Legend) - 클릭 시 검색 필터링 적용 */}
+      {/* 범례 (Legend) - 클릭 시 검색 필터링 적용 */}
       <div className="flex flex-wrap gap-x-6 gap-y-2">
         {stats.map((stat) => (
           <Link

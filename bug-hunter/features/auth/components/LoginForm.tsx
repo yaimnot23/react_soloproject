@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { login } from '../actions' // 방금 만든 login 함수 가져오기
+import { login } from '../actions'
 import { useActionState } from 'react'
 import Link from 'next/link'
 

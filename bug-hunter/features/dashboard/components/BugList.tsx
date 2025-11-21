@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import { incrementBugCount } from '@/features/dashboard/actions';
-
-// 1. priority 필드 추가 확인
 interface BugLog {
   id: number;
   errorSubject: string;
@@ -19,7 +17,7 @@ const formatTag = (tag: string) => {
   return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
 };
 
-// 2. 중요도별 색상 스타일 정의
+// 중요도별 색상 스타일 정의
 const priorityStyles: Record<string, string> = {
   low: 'border-l-4 border-l-blue-400',
   normal: 'border-l-4 border-l-gray-300',
@@ -43,13 +41,13 @@ export function BugList({ logs }: { logs: BugLog[] }) {
           ? log.tags.split(',').map(formatTag).filter(Boolean) 
           : [];
         
-        // 3. 해당 에러의 중요도 스타일 가져오기
+        // 해당 에러의 중요도 스타일 가져오기
         const borderStyle = priorityStyles[log.priority] || priorityStyles.normal;
 
         return (
           <div 
             key={log.id} 
-            // 4. borderStyle 클래스 적용 (테두리 색상 표시)
+            // borderStyle 클래스 적용 (테두리 색상 표시)
             className={`relative p-4 rounded-lg border border-gray-200 transition-all hover:shadow-md flex items-center justify-between group ${borderStyle} ${
               log.isSolved ? 'opacity-75 bg-gray-50' : 'bg-white'
             }`}

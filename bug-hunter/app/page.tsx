@@ -27,7 +27,7 @@ export default async function Home({ searchParams }: PageProps) {
             <LogoutButton />
           </div>
 
-          {/* [수정됨] 제목을 Link로 감싸서 홈으로 이동 기능 추가 */}
+          {/* 제목을 Link로 감싸서 홈으로 이동 기능 추가 */}
           {/* group 클래스를 사용해 hover 시 h1 색상이 변하도록 설정 */}
           <Link href="/" className="inline-block group">
             <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight group-hover:text-indigo-600 transition-colors cursor-pointer">

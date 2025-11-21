@@ -4,9 +4,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { signup } from '../actions' 
-import { useActionState } from 'react' // (Next.js 15 / React 19 최신 훅)
+import { useActionState } from 'react'
 
-// 1. 유효성 검사 규칙 정의 (블로그 내용 참고)
+// 1. 유효성 검사 규칙 정의 (블로그 내용 참고 : https://hani-develop-history.tistory.com/83)
 const signupSchema = z.object({
   name: z.string().min(2, '이름은 2글자 이상이어야 합니다.'),
   email: z.string().email('올바른 이메일 주소를 입력해주세요.'),

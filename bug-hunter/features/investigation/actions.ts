@@ -11,11 +11,10 @@ export async function getBugLog(id: number) {
   return log;
 }
 
-// 상세 내용 & 중요도 수정하기 (수정됨)
 export async function updateBugLog(id: number, formData: FormData) {
   const detail = formData.get('detail') as string;
   const solution = formData.get('solution') as string;
-  const priority = formData.get('priority') as string; // 중요도 값 가져오기
+  const priority = formData.get('priority') as string;
 
   await prisma.bugLog.update({
     where: { id },

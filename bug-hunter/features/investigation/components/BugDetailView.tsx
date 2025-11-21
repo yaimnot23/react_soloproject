@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation';
 import { updateBugLog, toggleSolved, deleteBugLog } from '@/features/investigation/actions';
 import { Badge } from '@/shared/ui/Badge';
 import { MarkdownExport } from '@/features/investigation/components/MarkdownExport';
-import { toast } from 'sonner'; // [추가됨]
-
-// ... (BugLogProps 인터페이스 등 기존 코드 유지) ...
+import { toast } from 'sonner';
 
 interface BugLogProps {
   log: {
@@ -31,20 +29,18 @@ export function BugDetailView({ log }: BugLogProps) {
     const newState = !isSolved;
     setIsSolved(newState);
     await toggleSolved(log.id, isSolved);
-    // [추가됨] 상태 변경 알림
     toast.success(newState ? '검거 완료 처리되었습니다!' : '다시 수배 중으로 변경되었습니다.');
   };
 
   const handleDelete = async () => {
     if (confirm('정말 삭제하시겠습니까? 복구할 수 없습니다.')) {
       await deleteBugLog(log.id);
-      toast.error('에러 로그가 삭제되었습니다.'); // [추가됨]
+      toast.error('에러 로그가 삭제되었습니다.');
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* ... (헤더 부분 기존 코드 유지) ... */}
       <div className="flex items-start justify-between mb-6 pb-6 border-b">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -84,11 +80,9 @@ export function BugDetailView({ log }: BugLogProps) {
 
       <form action={async (formData) => {
           await updateBugLog(log.id, formData);
-          // [수정됨] alert -> toast.success
           toast.success('변경사항이 저장되었습니다!');
       }}>
         <div className="grid gap-8">
-          {/* ... (입력 폼 내용 기존 코드 유지) ... */}
           <section className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <div className="flex items-center gap-4">
               <label className="font-semibold text-gray-900">중요도 설정:</label>

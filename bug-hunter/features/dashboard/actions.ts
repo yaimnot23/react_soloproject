@@ -22,7 +22,7 @@ export async function getBugLogs(query?: string, filter?: string) {
 
     // [추가됨] 2. 검색 조건에 '내 아이디(userId)' 추가
     const whereCondition: Prisma.BugLogWhereInput = {
-      userId: currentUserId, // <--- 핵심! 내 글만 조회 조건
+      userId: currentUserId, // 내 글만 조회 조건
     };
 
     if (query) {
