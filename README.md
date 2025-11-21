@@ -3,7 +3,7 @@
 
 2. 환경 변수 설정
    .env.example 파일을 참고하여 .env 파일을 생성하고, 아래 두 가지 값을 반드시 입력해주세요.
-   - DATABASE_URL: 본인의 PostgreSQL 데이터베이스 주소
+   - DATABASE_URL: 본인의 PostgreSQL 데이터베이스 주소(Vercel 의 Neon db 이용)
    - SESSION_SECRET: 세션 암호화에 사용할 임의의 비밀번호
 
 3. 데이터베이스 세팅
@@ -11,3 +11,6 @@
 
 4. 실행
    npm run dev
+
+**vercel 이용해서 배포중**
+https://react-soloproject-qkzw052vw-clhives-projects.vercel.app
