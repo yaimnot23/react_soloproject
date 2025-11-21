@@ -11,3 +11,5 @@
 
 4. 실행
    npm run dev
+
+**vercel 이용해서 배포중**
