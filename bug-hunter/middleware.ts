@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { decrypt } from '@/features/auth/lib/session'
-import { cookies } from 'next/headers'
+//import { cookies } from 'next/headers'
 
 // 1. 보호할 경로 (로그인해야 갈 수 있음)
 const protectedRoutes = ['/', '/logs']

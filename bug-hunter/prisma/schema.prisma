@@ -38,6 +38,6 @@ model BugLog {
 
   // 주인 정보 (User와 연결)
   // 기존 데이터 충돌 방지를 위해 일단 선택사항(?)으로 둡니다.
-  userId          Int?     
+  userId          Int?     =;/ㅣ>
   user            User?    @relation(fields: [userId], references: [id])
 }

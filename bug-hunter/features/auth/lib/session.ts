@@ -32,7 +32,7 @@ export async function decrypt(session: string | undefined = '') {
   }
 }
 
-// 4. 로그인 성공 시 쿠키 굽기 (세션 생성)
+// 4. 로그인 성공 시 쿠키 굽기
 export async function createSession(userId: string) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7일 뒤
   const session = await encrypt({ userId, expiresAt }) // 토큰 만들기
@@ -48,7 +48,7 @@ export async function createSession(userId: string) {
   })
 }
 
-// 5. 로그아웃 (쿠키 삭제)
+// 5. 로그아웃
 export async function deleteSession() {
   const cookieStore = await cookies()
   cookieStore.delete('session')
