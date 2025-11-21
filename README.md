@@ -13,4 +13,4 @@
    npm run dev
 
 **vercel 이용해서 배포중**
-https://react-soloproject-qkzw052vw-clhives-projects.vercel.app
+https://react-soloproject-bvftga851-clhives-projects.vercel.app
