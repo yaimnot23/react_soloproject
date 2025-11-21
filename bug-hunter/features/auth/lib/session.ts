@@ -12,7 +12,7 @@ if (!secretKey && process.env.NODE_ENV === 'production') {
 }
 
 // 2. 상수 관리 (유지보수성 향상)
-const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000 // 7일 (밀리초)
+const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000 // 7일
 const JWT_EXPIRATION = '7d' // JWT 만료 시간 문자열
 
 // 3. Payload 타입 정의 (jose의 JWTPayload 확장)
@@ -90,3 +90,23 @@ export async function deleteSession() {
   const cookieStore = await cookies()
   cookieStore.delete('session')
 }
+
+// 비밀번호 준비: .env.local에 본인만만의 마스터키를 숨겨둠.
+
+// 로그인 (createSession):
+
+// 마스터키로 도장 쾅 찍은 **7일짜리 출입증(JWT)**을 발급.
+
+// 손님 주머니(쿠키)에 안전하게(httpOnly) 넣어줌.
+
+// 활동 중 (updateSession):
+
+// 반납일을 뒤로 미뤄줌.
+
+// 검사 (decrypt):
+
+// 마스터키로 검사함.
+
+// 로그아웃 (deleteSession):
+
+// 출입증을 즉시 폐기함.
