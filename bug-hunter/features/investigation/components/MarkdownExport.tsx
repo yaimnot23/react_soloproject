@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react';
+import { toast } from 'sonner'; // [수정 1] toast import 추가
 
 interface BugLogData {
   errorSubject: string;
@@ -31,12 +32,16 @@ ${log.solution || '작성된 해결 방법이 없습니다.'}
     try {
       await navigator.clipboard.writeText(markdownText);
       
-      // 3. 성공 피드백 (버튼 글씨 바꾸기)
+      // 3. 성공 피드백 (버튼 글씨 바꾸기 + 토스트 메시지)
       setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000); // 2초 뒤 원상복구
+      
+      toast.success('클립보드에 Markdown 형식으로 복사되었습니다!'); 
+
+      setTimeout(() => setIsCopied(false), 2000); // 2초 뒤 버튼 상태 원상복구
     } catch (err) {
       console.error('복사 실패:', err);
-      alert('복사에 실패했습니다 ');
+      // 실패 시 alert 대신 에러 토스트 띄우기
+      toast.error('복사에 실패했습니다. 권한을 확인해주세요.');
     }
   };
 
