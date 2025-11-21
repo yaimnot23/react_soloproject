@@ -4,6 +4,7 @@ import { CreateBugForm } from '@/features/dashboard/components/CreateBugForm';
 import { BugList } from '@/features/dashboard/components/BugList';
 import { SearchBar } from '@/features/dashboard/components/SearchBar';
 import { LogoutButton } from '@/features/auth/components/LogoutButton';
+import { TagStats } from '@/features/dashboard/components/TagStats'; // [추가됨]
 
 interface PageProps {
   searchParams: Promise<{ q?: string; filter?: string }>;
@@ -22,7 +23,6 @@ export default async function Home({ searchParams }: PageProps) {
         
         {/* 헤더 영역 */}
         <div className="relative text-center mb-10">
-          {/* 2. 여기에 버튼 배치 (우측 상단) */}
           <div className="absolute right-0 top-0">
             <LogoutButton />
           </div>
@@ -35,9 +35,17 @@ export default async function Home({ searchParams }: PageProps) {
           </p>
         </div>
 
+        {/* 에러 등록 폼 */}
         <CreateBugForm />
+        
+        {/* 검색창 */}
         <SearchBar />
 
+        {/* [추가됨] 태그 통계 그래프 */}
+        {/* 검색 결과가 있을 때 해당 결과에 대한 통계를 보여줍니다 */}
+        <TagStats logs={logs} />
+
+        {/* 필터 및 리스트 헤더 */}
         <div className="flex items-center justify-between mb-4 text-sm px-1">
           <span className="text-gray-500">
             {filter === 'unsolved' ? ' 수배 중인 에러 ' : ' 전체 기록 '}
@@ -60,6 +68,7 @@ export default async function Home({ searchParams }: PageProps) {
           </div>
         </div>
 
+        {/* 에러 리스트 */}
         <BugList logs={logs} />
       </div>
     </main>
